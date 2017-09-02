@@ -14,7 +14,7 @@
                 <span class="kiwi-nicklist-user-prefix">{{userModePrefix(user)}}</span><span
                     class="kiwi-nicklist-user-nick"
                     @click="openUserbox(user, $event)"
-                    v-bind:style="nickStyle(user.nick)"
+                    v-bind:style="nickStyle(user)"
                 >{{user.nick}}</span>
             </li>
         </ul>
@@ -28,6 +28,7 @@ import _ from 'lodash';
 import state from 'src/libs/state';
 import Logger from 'src/libs/Logger';
 import * as TextFormatting from 'src/helpers/TextFormatting';
+import * as Agl from 'src/libs/Agl';
 
 export default {
     data: function data() {
@@ -106,10 +107,18 @@ export default {
         },
     },
     methods: {
-        nickStyle: function nickStyle(nick) {
+        nickStyle: function nickStyle(user) {
             let styles = {};
             if (this.useColouredNicks) {
-                styles.color = TextFormatting.createNickColour(nick);
+                if (1 === 2) { // if (this.useColouredNicks)
+                    styles.color = TextFormatting.createNickColour(user.nick);
+                } else {
+                    if (user.gender === undefined) {
+                        Logger.error(user.nick, user.gender);
+                    } else {
+                        styles.color = Agl.createNickColour(user);
+                    }
+                }
             }
             return styles;
         },

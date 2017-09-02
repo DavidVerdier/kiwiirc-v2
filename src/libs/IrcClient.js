@@ -272,6 +272,7 @@ function clientMiddleware(state, networkid) {
             let messageBody = TextFormatting.formatText('channel_join', {
                 nick: event.nick,
                 username: event.ident,
+                realname: event.gecos,
                 host: event.hostname,
                 text: 'has joined',
             });
@@ -295,6 +296,7 @@ function clientMiddleware(state, networkid) {
                 messageBody = TextFormatting.formatText('channel_selfkick', {
                     nick: event.nick,
                     username: event.ident,
+                    realname: event.gecos,
                     host: event.hostname,
                     text: `${event.nick} kicked you from ${event.channel} (${event.message})`,
                 });

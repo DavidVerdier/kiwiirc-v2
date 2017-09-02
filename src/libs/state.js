@@ -5,6 +5,8 @@ import * as IrcClient from './IrcClient';
 import Message from './Message';
 import batchedAdd from './batchedAdd';
 import * as Misc from 'src/helpers/Misc';
+import * as Agl from './Agl';
+import logger from 'src/libs/Logger';
 
 const stateObj = {
     // May be set by a StatePersistence instance
@@ -619,6 +621,7 @@ const state = new Vue({
         },
 
         addUser: function addUser(networkid, user) {
+            logger('addUser', user.nick, user);
             let network = null;
 
             // Accept either a network ID or a direct network object
@@ -633,6 +636,11 @@ const state = new Vue({
             }
 
             let userObj = null;
+
+            if (user.realname !== undefined) {
+                let agl = Agl.addAglToUser(user.realname);
+                Object.assign(user, agl);
+            }
 
             if (!network.users[user.nick.toLowerCase()]) {
                 userObj = network.users[user.nick.toLowerCase()] = {
