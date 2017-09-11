@@ -189,6 +189,7 @@ function clientMiddleware(state, networkid) {
         if (command === 'message') {
             let isPrivateMessage = false;
             let bufferName = event.from_server ? '*' : event.target;
+            // Logger.error('MSG: ', event);
 
             // PMs should go to a buffer with the name of the other user
             if (!event.from_server && event.target === client.user.nick) {
@@ -272,7 +273,6 @@ function clientMiddleware(state, networkid) {
             let messageBody = TextFormatting.formatText('channel_join', {
                 nick: event.nick,
                 username: event.ident,
-                realname: event.gecos,
                 host: event.hostname,
                 text: 'has joined',
             });
@@ -296,7 +296,6 @@ function clientMiddleware(state, networkid) {
                 messageBody = TextFormatting.formatText('channel_selfkick', {
                     nick: event.nick,
                     username: event.ident,
-                    realname: event.gecos,
                     host: event.hostname,
                     text: `${event.nick} kicked you from ${event.channel} (${event.message})`,
                 });

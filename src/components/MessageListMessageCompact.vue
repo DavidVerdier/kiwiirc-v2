@@ -43,7 +43,7 @@
         </div>
         <div
             class="kiwi-messagelist-nick"
-            v-bind:style="ml.nickStyle(message.nick)"
+            v-bind:style="ml.nickStyle(message)"
             v-bind:data-nick="message.nick"
             @mouseover="ml.hover_nick=message.nick.toLowerCase();"
             @mouseout="ml.hover_nick='';"
@@ -63,7 +63,6 @@
 
 // import state from 'src/libs/state';
 import MessageInfo from './MessageInfo';
-
 
 export default {
     components: {

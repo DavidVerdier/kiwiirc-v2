@@ -30,10 +30,12 @@
 
 import strftime from 'strftime';
 import state from 'src/libs/state';
-import * as TextFormatting from 'src/helpers/TextFormatting';
+// import * as TextFormatting from 'src/helpers/TextFormatting';
 import NotConnected from './NotConnected';
 import MessageListMessageCompact from './MessageListMessageCompact';
 import MessageListMessageModern from './MessageListMessageModern';
+// import Logger from 'src/libs/Logger';
+import * as Agl from 'src/libs/Agl';
 
 // If we're scrolled up more than this many pixels, don't auto scroll down to the bottom
 // of the message list
@@ -187,8 +189,10 @@ export default {
 
             return highlightFound;
         },
-        nickStyle: function nickColour(nick) {
-            return 'color:' + TextFormatting.createNickColour(nick) + ';';
+        nickStyle: function nickColour(user) {
+            // Logger.error('nickColour: ', user);
+            // return 'color:' + TextFormatting.createNickColour(user.nick) + ';';
+            return 'color:' + Agl.createNickColour(user) + ';';
         },
         onListClick: function onListClick(event) {
             this.toggleMessageInfo();

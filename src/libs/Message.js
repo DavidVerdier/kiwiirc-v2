@@ -32,7 +32,7 @@ export default class Message {
 
             let linkified = TextFormatting.linkifyUrls(word, {
                 addHandle: false,
-                handleClass: 'fa fa-chevron-right kiwi-messagelist-message-linkhandle',
+                handleClass: 'fa fa-chevron-right xkiwi-messagelist-message-linkhandle',
             });
             if (linkified.urls.length > 0) {
                 this.mentioned_urls = this.mentioned_urls.concat(linkified.urls);

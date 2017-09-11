@@ -2,6 +2,8 @@ import _ from 'lodash';
 import * as Colours from './Colours';
 import { md5 } from './Md5';
 import ThemeManager from 'src/libs/ThemeManager';
+import Logger from 'src/libs/Logger';
+// import * as Agl from 'src/libs/Agl';
 
 /**
  *   Formats a message. Adds bold, underline and colouring
@@ -316,7 +318,9 @@ export function linkifyUsers(word, userlist) {
     }
 
     let escaped = _.escape(nick);
-    let colour = createNickColour(nick);
+    // let colour = Agl.createNickColour(nick);
+    // let colour = createNickColour(nick);
+    let colour = 'FF0000';
     ret = `<a class="kiwi-nick" data-nick="${escaped}" style="color:${colour}">${escaped}</a>`;
 
     if (prepend) {
@@ -335,6 +339,7 @@ export function linkifyUsers(word, userlist) {
 let nickColourCache = Object.create(null);
 export function createNickColour(nick) {
     let nickLower = nick.toLowerCase();
+    Logger.error('network: ', nick);
 
     if (nickColourCache[nickLower]) {
         return nickColourCache[nickLower];

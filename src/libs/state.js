@@ -6,7 +6,7 @@ import Message from './Message';
 import batchedAdd from './batchedAdd';
 import * as Misc from 'src/helpers/Misc';
 import * as Agl from './Agl';
-import logger from 'src/libs/Logger';
+// import Logger from 'src/libs/Logger';
 
 const stateObj = {
     // May be set by a StatePersistence instance
@@ -560,6 +560,7 @@ const state = new Vue({
             }
 
             let user = this.getUser(buffer.networkid, message.nick);
+            // Logger.error('addMessage: ', user);
             let bufferMessage = new Message(message, user);
             if (user && user.ignore) {
                 bufferMessage.ignore = true;
@@ -621,7 +622,6 @@ const state = new Vue({
         },
 
         addUser: function addUser(networkid, user) {
-            logger('addUser', user.nick, user);
             let network = null;
 
             // Accept either a network ID or a direct network object
@@ -636,9 +636,14 @@ const state = new Vue({
             }
 
             let userObj = null;
+            let agl = {
+                age: '',
+                gender: '',
+                location: '',
+            };
 
             if (user.realname !== undefined) {
-                let agl = Agl.addAglToUser(user.realname);
+                agl = Agl.addAglToUser(user.realname);
                 Object.assign(user, agl);
             }
 
@@ -648,6 +653,9 @@ const state = new Vue({
                     host: user.host || '',
                     username: user.username || '',
                     realname: user.realname || '',
+                    age: agl.age || '',
+                    gender: agl.gender || '',
+                    location: agl.location || '',
                     modes: user.modes || '',
                     away: user.away || '',
                     buffers: Object.create(null),

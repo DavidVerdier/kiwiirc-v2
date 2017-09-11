@@ -40,7 +40,7 @@
                 v-if="isMessage(message)"
                 class="kiwi-messagelist-modern-avatar"
                 :style="{
-                    'background-color': nickColour(message.nick)
+                    'background-color': nickColour(message)
                 }"
                 v-bind:data-nick="message.nick"
             >
@@ -76,9 +76,10 @@
 <script>
 
 // import state from 'src/libs/state';
-import * as TextFormatting from 'src/helpers/TextFormatting';
+// import * as TextFormatting from 'src/helpers/TextFormatting';
 import MessageInfo from './MessageInfo';
-
+import Logger from 'src/libs/Logger';
+import * as Agl from 'src/libs/Agl';
 
 export default {
     components: {
@@ -95,8 +96,10 @@ export default {
         isHoveringOverMessage: function isHoveringOverMessage(message) {
             return message.nick && message.nick.toLowerCase() === this.hover_nick.toLowerCase();
         },
-        nickColour: function nickColour(nick) {
-            return TextFormatting.createNickColour(nick);
+        nickColour: function nickColour(user) {
+            Logger.error('nickColourModern: ', user);
+            // return TextFormatting.createNickColour(nick.nick);
+            return Agl.createNickColour(user);
         },
         isMessage: function isMessage(message) {
             let types = ['privmsg', 'action', 'notice'];

@@ -109,13 +109,12 @@ export default {
     methods: {
         nickStyle: function nickStyle(user) {
             let styles = {};
+            let testOn = false;
             if (this.useColouredNicks) {
-                if (1 === 2) { // if (this.useColouredNicks)
+                if (testOn) { // if (this.useColouredNicks)
                     styles.color = TextFormatting.createNickColour(user.nick);
                 } else {
-                    if (user.gender === undefined) {
-                        Logger.error(user.nick, user.gender);
-                    } else {
+                    if (user.gender !== undefined) {
                         styles.color = Agl.createNickColour(user);
                     }
                 }
