@@ -4,31 +4,31 @@ msgstr "Затвори"
 
 #: Connect
 msgid "connect"
-msgstr "свързване"
+msgstr "Свързване"
 
 #: Connecting...
 msgid "connecting"
-msgstr "свързва се"
+msgstr "Свързване..."
 
 #: Connected
 msgid "connected"
-msgstr "свързан"
+msgstr "Свързан"
 
 #: Settings
 msgid "settings"
-msgstr "настройки"
+msgstr "Настройки"
 
 #: Banned
 msgid "banned"
-msgstr "баннат"
+msgstr "Изгонени"
 
 #: Notifications
 msgid "notifications"
-msgstr "известия"
+msgstr "Известия"
 
 #: Username
 msgid "username"
-msgstr "потребителско име"
+msgstr "Потребителско име"
 
 #: Password
 msgid "password"
@@ -36,7 +36,7 @@ msgstr "Парола"
 
 #: I have a password
 msgid "password_have"
-msgstr "Имам парола"
+msgstr "Вече имам парола."
 
 #: Server
 msgid "server"
@@ -44,7 +44,7 @@ msgstr "Сървър"
 
 #: Nick (Nickname)
 msgid "nick"
-msgstr "Псевдоним"
+msgstr "Потребителско име"
 
 #: Channel
 msgid "channel"
@@ -58,9 +58,17 @@ msgstr "IRC Мрежа"
 msgid "znc"
 msgstr "ZNC"
 
+#: Logging in...
+msgid "logging_in"
+msgstr "Влизане..."
+
+#: Invalid login
+msgid "invalid_login"
+msgstr "Неправилно вписване"
+
 #: Realname field in a users whois
 msgid "whois_realname"
-msgstr "Поле за истинско име на потребителя при whois"
+msgstr "Истинско име"
 
 #: Away status in a users whois
 msgid "whois_status"
@@ -68,7 +76,7 @@ msgstr "Статус"
 
 #: Away status in a users whois
 msgid "whois_status_available"
-msgstr "Статус"
+msgstr "на линия"
 
 #: Send user a message button
 msgid "send_a_message"
@@ -76,7 +84,7 @@ msgstr "Изпрати съобщение"
 
 #: Show more information
 msgid "more_information"
-msgstr "Повече инфо"
+msgstr "Повече инфомация"
 
 #: Ignore user toggle box
 msgid "ignore_user"
@@ -84,7 +92,7 @@ msgstr "Добави в игнора"
 
 #: Channel input box
 msgid "connection_channel"
-msgstr "Автоматично влизане в канали."
+msgstr "Автоматично влизане в канали"
 
 #: General Title
 msgid "settings_general"
@@ -92,35 +100,39 @@ msgstr "Главни настройки"
 
 #: Theme Title
 msgid "settings_theme"
-msgstr "Настройки на визията"
+msgstr "Настройки на темата"
 
 #: Theme URL
 msgid "settings_themeurl"
-msgstr "Адрес на визията"
+msgstr "Адрес на темата"
+
+#: Use Monospace
+msgid "settings_use_monospace"
+msgstr "Използвайте Monospace"
 
 #: Show autocomplete list
 msgid "settings_show_autocomplete"
-msgstr "Показване на кутийката с подсказките"
+msgstr "Показване на списъка за автоматично довършване"
 
 #: Messages Title
 msgid "settings_messages_title"
-msgstr "Наименование на съобщението"
+msgstr "Настойки за Съобщенията"
 
 #: Show timestamps
 msgid "settings_timestamps"
-msgstr "Време към съобщенията"
+msgstr "Покажи времето"
 
 #: Use 24-hour timestamps
 msgid "settings_24hour_timestamps"
-msgstr "Времето да е в 24-часов формат"
+msgstr "Показване на 24h време"
 
 #: Show emoticons
 msgid "settings_emoticons"
-msgstr "Настройки на емотИкони"
+msgstr "Покажи емотикони"
 
 #: Block new Private messages
 msgid "settings_block_private"
-msgstr "Занбраняване на лични съобщения"
+msgstr "Блокирай нови лични съобщения"
 
 #: Messages in scrollback
 msgid "settings_scrollback"
@@ -132,7 +144,7 @@ msgstr "Допълнително форматиране"
 
 #: Include join/part messages as activity
 msgid "settings_show_joinpart"
-msgstr "Известия за влизане/излизане от канал"
+msgstr "Добави влизания/излизаня съобщения като активност"
 
 #: Mute sound notifications
 msgid "settings_mute_sound"
@@ -160,11 +172,11 @@ msgstr "При всяко съобщение"
 
 #: I am mentioned
 msgid "settings_notify_mentioned"
-msgstr "Само когато ме споменат"
+msgstr "Само когато ме споменат."
 
 #: Never
 msgid "settings_notify_never"
-msgstr "Да не ме известява"
+msgstr "Никога"
 
 #: Mute sounds
 msgid "settings_notify_mute"
@@ -180,11 +192,11 @@ msgstr "Списък с банове"
 
 #: Banned by
 msgid "bans_by"
-msgstr "Наложен от "
+msgstr "Изгонен от"
 
 #: Refreshing banlist
 msgid "bans_refreshing"
-msgstr "Опресняване на Бан лист-а"
+msgstr "Опресняване на Бан лист-а...."
 
 #: Nobody is banned
 msgid "bans_nobody"
@@ -192,11 +204,11 @@ msgstr "Все още няма баннати потребители"
 
 #: Topic
 msgid "channel_topic"
-msgstr "Темата на деня е"
+msgstr "Темата на деня"
 
 #: Moderated chat
 msgid "channel_moderated"
-msgstr "Заключване на канала за съобщения."
+msgstr "Заключване на канала за изпращане на съобщения."
 
 #: Invite Only
 msgid "channel_invite"
@@ -212,7 +224,7 @@ msgstr "Блокиране на външни съобщения"
 
 #: Welcome to Kiwi IRC!
 msgid "container_welcome"
-msgstr "Добре дошли в "
+msgstr "Добре дошли в Kiwi IRC!"
 
 #: Show statebrowser
 msgid "container_statebrowser"
@@ -228,15 +240,15 @@ msgstr "Не сте свързан"
 
 #: Private conversation with
 msgid "container_privmsg"
-msgstr "Лични съобщения с "
+msgstr "Частен разговор с {{user}}"
 
 #: input wrap placeholder
 msgid "input_placeholder"
-msgstr "Вмъкнете контейнера за.."
+msgstr "Изпрати съобщение.... "
 
 #: Loading
 msgid "media_loading"
-msgstr "Зареждане.."
+msgstr "Зареждане на  {{url}}..."
 
 #: Load previous
 msgid "messages_load"
@@ -264,7 +276,7 @@ msgstr "Прякор"
 
 #: Advanced
 msgid "settings_advanced"
-msgstr "Други настройки"
+msgstr "Разширени настройки"
 
 #: Encoding
 msgid "settings_encoding"
@@ -288,23 +300,23 @@ msgstr "Премахни тази мрежа"
 
 #: Person key
 msgid "person"
-msgstr "Личен ключ"
+msgstr "{{count}} Потребителя"
 
 #: Person plural key
 msgid "person_plural"
-msgstr "Личен ключ"
+msgstr "{{count}} Потребителя"
 
 #: Reconnect Channel
 msgid "reconnect_channel"
-msgstr "Влез отново в #канал"
+msgstr "Влезте отново за да влезете в {{channel}}"
 
 #: Reconnect to network
 msgid "reconnect_network"
-msgstr "Влез отново в мрежата"
+msgstr "Влезте отново в  {{network}} за да  общувате отново"
 
 #: Reconnect to query
 msgid "reconnect_query"
-msgstr "Свържете се отново към заявката"
+msgstr "Влезте отново за продължите разговора си с {{user}}"
 
 #: Connection settings
 msgid "reconnect_settings"
@@ -316,7 +328,7 @@ msgstr "Затвори настройките"
 
 #: Channel options
 msgid "side_options"
-msgstr "Опции на #канала"
+msgstr "Опции на канала"
 
 #: Your settings
 msgid "side_settings"
@@ -324,7 +336,7 @@ msgstr "Твойте настройки"
 
 #: Show when people join
 msgid "side_joins"
-msgstr "Показва когато потребители влязат в канал"
+msgstr "Показва кога влизат потребители в канала"
 
 #: Extra message formatting
 msgid "side_formatting"
@@ -332,7 +344,7 @@ msgstr "Допълнтите настройки за съобщения"
 
 #: Nick colours in the list"
 msgid "side_colours"
-msgstr "Цветни  никове в списъка с портребители"
+msgstr "Цветни  никове в списъка с потребители"
 
 #: No buffer set
 msgid "side_buffer"
@@ -347,7 +359,7 @@ msgstr "Този текст няма информация за контекст�
 
 #: Leave
 msgid "state_leave"
-msgstr "Напускам"
+msgstr "Премахни {{name}}"
 
 #: Your account
 msgid "state_account"
@@ -363,7 +375,7 @@ msgstr "Забрани"
 
 #: No networks here yet.
 msgid "state_network"
-msgstr "IRC Мрежа"
+msgstr "Все още няма добавени мрежи тук."
 
 #: Add one?
 msgid "state_add"
@@ -387,11 +399,11 @@ msgstr "Влез в нов #канал"
 
 #: Account name
 msgid "user_account"
-msgstr "Потребителско име"
+msgstr "Потребителско име: {{user}}"
 
 #: Real name
 msgid "user_realname"
-msgstr "Истинско име"
+msgstr "Истинско име: {{realname}}"
 
 #: Is a bot
 msgid "user_bot"
@@ -403,19 +415,19 @@ msgstr "Е на линия за да ви помогне"
 
 #: Is an operator
 msgid "user_op"
-msgstr "IRC оператор"
+msgstr "Оператор"
 
 #: Connected to
 msgid "user_server"
-msgstr "Свързан към сървър"
+msgstr "Свързан към сървър: {{server}} {{info}}"
 
 #: Securely connected via SSL/TLS
 msgid "user_secure"
-msgstr "Използва защитена връзка SSL/TLS"
+msgstr "Използва защитена връзка: SSL/TLS"
 
 #: Also in channels
 msgid "user_channels"
-msgstr "Канали "
+msgstr "Канали в които е: {{channels}}"
 
 #: Access level
 msgid "user_access"
@@ -432,6 +444,10 @@ msgstr "Ритни от канала"
 #: Ban from the channel
 msgid "user_ban"
 msgstr "Бан от канал"
+
+#: Kick + Ban from the channel
+msgid "user_kickban"
+msgstr "забрани и премахни от канала"
 
 #: Your IRC client
 msgid "personal_client"
@@ -463,7 +479,7 @@ msgstr "Direct websockets. No Kiwi server or webirc involved."
 
 #: (Thanks to Adam @Rizon for the development websocket server support!)
 msgid "rizon_thanks"
-msgstr " (Thanks to Adam @Rizon for the development websocket server support!)"
+msgstr " (Благодарности на Adam @Rizon за помощта относно websocket server!)"
 
 #: Give the developer version of Kiwi IRC a try!
 msgid "rizon_dev"

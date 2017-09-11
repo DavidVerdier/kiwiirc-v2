@@ -4,6 +4,7 @@
         v-bind:class="{
             'kiwi-wrap--statebrowser-drawopen': stateBrowserDrawOpen,
             'kiwi-wrap--monospace': setting('useMonospace'),
+            'kiwi-wrap--touch': state.ui.is_touch,
         }"
         @click="emitDocumentClick"
     >
@@ -22,7 +23,6 @@
                         :network="network"
                         :buffer="buffer"
                         :users="users"
-                        :messages="messages"
                         :isHalfSize="mediaviewerOpen"
                     ></container>
                     <media-viewer
@@ -46,7 +46,6 @@
 import 'font-awesome-webpack';
 
 import startupWelcome from 'src/components/startups/Welcome';
-import startupWelcomeRizon from 'src/components/startups/WelcomeRizon';
 import startupCustomServer from 'src/components/startups/CustomServer';
 import startupKiwiBnc from 'src/components/startups/KiwiBnc';
 import startupPersonal from 'src/components/startups/Personal';
@@ -111,6 +110,10 @@ export default {
         window.addEventListener('blur', event => {
             state.ui.app_has_focus = false;
         }, false);
+        window.addEventListener('touchstart', event => {
+            // Parts of the UI adjust themselves if we're known to be using a touchscreen
+            state.ui.is_touch = true;
+        });
     },
     mounted: function mounted() {
         // Decide which startup screen to use depending on the config
@@ -118,14 +121,17 @@ export default {
             welcome: startupWelcome,
             customServer: startupCustomServer,
             kiwiBnc: startupKiwiBnc,
-            welcomeRizon: startupWelcomeRizon,
             personal: startupPersonal,
         };
-        let startup = state.settings.startupScreen || 'personal';
-        if (!startupScreens[startup]) {
-            logger.error(`Startup screen "${state.settings.startupScreen}" does not exist`);
+        let extraStartupScreens = state.getStartups();
+
+        let startupName = state.settings.startupScreen || 'personal';
+        let startup = extraStartupScreens[startupName] || startupScreens[startupName];
+
+        if (!startup) {
+            logger.error(`Startup screen "${startupName}" does not exist`);
         } else {
-            this.startupComponent = startupScreens[startup];
+            this.startupComponent = startup;
         }
     },
     components: {
@@ -153,6 +159,9 @@ export default {
         };
     },
     computed: {
+        state() {
+            return state;
+        },
         networks() {
             return state.networks;
         },
@@ -169,11 +178,6 @@ export default {
             }
 
             return activeNetwork.users;
-        },
-        messages() {
-            return this.buffer ?
-                this.buffer.getMessages() :
-                [];
         },
     },
     methods: {
@@ -236,7 +240,7 @@ body {
     z-index: 1;
 }
 /* Small screen will cause the statebrowser to act as a drawer */
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
     .kiwi-statebrowser {
         left: -200px;
     }
@@ -273,7 +277,7 @@ body {
     z-index: -1;
 }
 /* Small screen will cause the statebrowser to act as a drawer */
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
     .kiwi-workspace {
         left: 0;
         margin-left: 0;
@@ -286,7 +290,7 @@ body {
         width: 100%;
         height: 100%;
         opacity: 1;
-        z-index: 2;
+        z-index: 10;
     }
 }
 .kiwi-container {

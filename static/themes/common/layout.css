@@ -276,11 +276,9 @@ div {
 }
 
 .kiwi-statebrowser-channel-label {
-    padding: 3px 5px;
-    font-size: 0.7em;
+    padding: 1px 5px;
     border-radius: 5px;
     line-height: 1.3em;
-    font-weight: bold;
 }
 
 .kiwi-statebrowser-channel-label-transition-enter-active, .kiwi-statebrowser-channel-label-transition-leave-active {
@@ -594,6 +592,11 @@ div {
 
 /* Links */
 .kiwi-messagelist-message-linkhandle {
+    margin-left: 4px;
+    font-size: 0.8em;
+}
+.kiwi-wrap--touch .kiwi-messagelist-message-linkhandle {
+    display: none;
 }
 
 /* Errors */
@@ -767,9 +770,6 @@ div {
  */
 .kiwi-welcome-simple {
     text-align: center;
-    padding-top: 1em;
-    width: 300px;
-    margin: 0 auto;
 }
 .kiwi-welcome-simple .input-text,
 .kiwi-welcome-simple .kiwi-welcome-simple-have-password input {

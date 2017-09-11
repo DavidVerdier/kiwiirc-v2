@@ -44,11 +44,19 @@ export function create(state, networkid) {
         let bnc = state.setting('bnc');
         if (bnc.active) {
             let netname = network.connection.bncname;
+            let password = '';
+
+            // bnccontrol is the control connection for BOUNCER commands, not a network
+            if (network.name === 'bnccontrol') {
+                password = `${bnc.username}:${bnc.password}`;
+            } else {
+                password = `${bnc.username}/${netname}:${bnc.password}`;
+            }
 
             ircClient.options.host = bnc.server;
             ircClient.options.port = bnc.port;
             ircClient.options.tls = bnc.tls;
-            ircClient.options.password = `${bnc.username}/${netname}:${bnc.password}`;
+            ircClient.options.password = password;
             ircClient.options.nick = network.nick;
             ircClient.options.encoding = network.connection.encoding;
         } else {
@@ -88,15 +96,18 @@ function clientMiddleware(state, networkid) {
         rawEvents.use(rawEventsHandler);
 
         client.on('connecting', () => {
+            network.state_error = '';
             network.state = 'connecting';
         });
 
         client.on('connected', () => {
+            network.state_error = '';
             network.state = 'connected';
         });
 
-        client.on('socket close', () => {
+        client.on('socket close', (err) => {
             network.state = 'disconnected';
+            network.state_error = err || '';
         });
     };
 
@@ -425,15 +436,17 @@ function clientMiddleware(state, networkid) {
         }
 
         if (command === 'wholist') {
-            event.users.forEach(user => {
-                let userObj = {
-                    nick: user.nick,
-                    host: user.hostname || undefined,
-                    username: user.ident || undefined,
-                    away: user.away ? 'Away' : '',
-                    realname: user.real_name,
-                };
-                state.addUser(networkid, userObj);
+            state.usersTransaction(networkid, users => {
+                event.users.forEach(user => {
+                    let userObj = {
+                        nick: user.nick,
+                        host: user.hostname || undefined,
+                        username: user.ident || undefined,
+                        away: user.away ? 'Away' : '',
+                        realname: user.real_name,
+                    };
+                    state.addUser(networkid, userObj, users);
+                });
             });
         }
 
@@ -504,13 +517,18 @@ function clientMiddleware(state, networkid) {
 
         if (command === 'userlist') {
             let buffer = state.getOrAddBufferByName(networkid, event.channel);
+            let users = [];
             event.users.forEach(user => {
-                state.addUserToBuffer(buffer, {
-                    nick: user.nick,
-                    username: user.ident,
-                    hostname: user.hostname,
-                }, user.modes);
+                users.push({
+                    user: {
+                        nick: user.nick,
+                        username: user.ident,
+                        hostname: user.hostname,
+                    },
+                    modes: user.modes,
+                });
             });
+            state.addMultipleUsersToBuffer(buffer, users);
         }
 
         if (command === 'channel info') {

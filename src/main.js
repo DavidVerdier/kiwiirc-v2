@@ -5,6 +5,7 @@ import i18nextXHR from 'i18next-xhr-backend';
 import VueI18Next from '@panter/vue-i18next';
 
 import AvailableLocales from 'src/res/locales/available.json';
+import FallbackLocale from 'src/../static/locales/en-us.json';
 import App from 'src/components/App';
 import StartupError from 'src/components/StartupError';
 import Logger from 'src/libs/Logger';
@@ -23,6 +24,9 @@ import 'src/components/utils/InputPrompt';
 
 // Add the global API as soon as possible so that things can start listening to it
 let api = window.kiwi = GlobalApi.singleton();
+
+// Third party imports now have access to the state and api
+import 'src/thirdparty/';
 
 function getQueryVariable(variable) {
     let query = window.location.search.substring(1);
@@ -156,10 +160,6 @@ function initLocales() {
         fallbackLng: 'en-us',
         lowerCaseLng: true,
         backend: {
-            // path where resources get loaded from, or a function
-            // returning a path:
-            // function(lngs, namespaces) { return customPath; }
-            // the returned path will interpolate lng, ns if provided like giving a static path
             loadPath: 'static/locales/{{lng}}.json',
 
             // allow cross domain requests
@@ -169,6 +169,30 @@ function initLocales() {
             withCredentials: false,
         },
     });
+
+    // Build in the english translation so it can be used as a fallback
+    i18next.addResourceBundle('en-us', 'translation', FallbackLocale);
+
+    // Override the $t function so that empty translations fallback to en-us
+    Vue.mixin({
+        computed: {
+            $t() {
+                return (key, options) => {
+                    let val = this.$i18n.i18next.t(key, options, this.$i18n.i18nLoadedAt);
+                    if (!val) {
+                        let opts = options || {};
+                        opts.lng = 'en-us';
+                        val = this.$i18n.i18next.t(key, opts, this.$i18n.i18nLoadedAt);
+                    }
+                    return val;
+                };
+            },
+        },
+    });
+
+    if (state.setting('language')) {
+        i18next.changeLanguage(state.setting('language'));
+    }
 }
 
 
@@ -191,6 +215,8 @@ function startApp() {
     if (argTheme) {
         themeMgr.setTheme(argTheme);
     }
+
+    api.emit('init');
 
     /* eslint-disable no-new */
     new Vue({

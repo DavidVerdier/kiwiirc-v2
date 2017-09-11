@@ -102,12 +102,14 @@ const stateObj = {
         active_network: 0,
         active_buffer: '',
         app_has_focus: true,
+        is_touch: false,
     },
     networks: [
         /* {
             id: 1,
             name: 'sumnetwork',
             state: 'disconnected',
+            state_error: '',
             connection: {
                 server: 'irc.freenode.net',
                 port: 6667,
@@ -185,36 +187,40 @@ const stateObj = {
             },
         }, */
     ],
-    messages: [
-        /* {
-            networkid: 1,
-            buffer: '#kiwiirc',
-            messages: [
-                {
-                    time: Date.now(),
-                    nick: 'prawnsalad',
-                    message: 'hello',
-                },
-            ],
-        },
-        {
-            networkid: 2,
-            buffer: '#orangechat',
-            messages: [
-                {
-                    time: Date.now(),
-                    nick: 'prawnsalad',
-                    message: 'boom boom boom',
-                },
-                {
-                    time: Date.now() + 10000,
-                    nick: 'someone',
-                    message: '.. you want me in your room?',
-                },
-            ],
-        }, */
-    ],
 };
+
+// Messages are seperate from the above state object to keep them from being reactive. Saves CPU.
+const messages = [
+    /* {
+        networkid: 1,
+        buffer: '#kiwiirc',
+        messages: [
+            {
+                time: Date.now(),
+                nick: 'prawnsalad',
+                message: 'hello',
+            },
+        ],
+    },
+    {
+        networkid: 2,
+        buffer: '#orangechat',
+        messages: [
+            {
+                time: Date.now(),
+                nick: 'prawnsalad',
+                message: 'boom boom boom',
+            },
+            {
+                time: Date.now() + 10000,
+                nick: 'someone',
+                message: '.. you want me in your room?',
+            },
+        ],
+    }, */
+];
+
+const availableStartups = Object.create(null);
 
 // TODO: Move these state changing methods into vuex or something
 const state = new Vue({
@@ -428,6 +434,9 @@ const state = new Vue({
 
             let idx = this.networks.indexOf(network);
             this.networks.splice(idx, 1);
+
+            let eventObj = { network };
+            state.$emit('network.removed', eventObj);
         },
 
         getActiveBuffer: function getActiveBuffer() {
@@ -509,6 +518,9 @@ const state = new Vue({
 
             initialiseBufferState(buffer);
 
+            let eventObj = { buffer };
+            state.$emit('buffer.new', eventObj);
+
             return buffer;
         },
 
@@ -520,17 +532,20 @@ const state = new Vue({
                 return;
             }
 
+            let eventObj = { buffer };
+            state.$emit('buffer.close', eventObj);
+
             let bufferIdx = network.buffers.indexOf(buffer);
             if (bufferIdx > -1) {
                 network.buffers.splice(bufferIdx, 1);
             }
 
-            let messageIdx = _.findIndex(this.messages, {
+            let messageIdx = _.findIndex(messages, {
                 networkid: network.id,
                 buffer: buffer.name,
             });
             if (messageIdx > -1) {
-                this.messages.splice(messageIdx, 1);
+                messages.splice(messageIdx, 1);
             }
 
             if (buffer.isChannel() && buffer.joined) {
@@ -550,15 +565,6 @@ const state = new Vue({
         },
 
         addMessage: function addMessage(buffer, message) {
-            let messages = _.find(this.messages, {
-                networkid: buffer.networkid,
-                buffer: buffer.name,
-            });
-
-            if (!messages) {
-                return;
-            }
-
             let user = this.getUser(buffer.networkid, message.nick);
             // Logger.error('addMessage: ', user);
             let bufferMessage = new Message(message, user);
@@ -600,13 +606,13 @@ const state = new Vue({
         },
 
         getMessages: function getMessages(buffer) {
-            let messages = _.find(this.messages, {
+            let bufMessages = _.find(messages, {
                 networkid: buffer.networkid,
                 buffer: buffer.name,
             });
 
-            return messages ?
-                messages.messages :
+            return bufMessages ?
+                bufMessages.messages :
                 [];
         },
 
@@ -621,7 +627,20 @@ const state = new Vue({
             return user;
         },
 
-        addUser: function addUser(networkid, user) {
+        // Modify a networks user array without hitting vues reactive system until fn()
+        // has completed. Good for making large changes in bulk
+        usersTransaction: function usersTransaction(networkid, fn) {
+            let network = this.getNetwork(networkid);
+            if (!network) {
+                return;
+            }
+
+            let users = _.clone(network.users);
+            fn(users);
+            this.$set(network, 'users', users);
+        },
+
+        addUser: function addUser(networkid, user, usersArr_) {
             let network = null;
 
             // Accept either a network ID or a direct network object
@@ -635,6 +654,7 @@ const state = new Vue({
                 return null;
             }
 
+            let usersArr = usersArr_ || network.users;
             let userObj = null;
             let agl = {
                 age: '',
@@ -647,8 +667,8 @@ const state = new Vue({
                 Object.assign(user, agl);
             }
 
-            if (!network.users[user.nick.toLowerCase()]) {
-                userObj = network.users[user.nick.toLowerCase()] = {
+            if (!usersArr[user.nick.toLowerCase()]) {
+                userObj = usersArr[user.nick.toLowerCase()] = {
                     nick: user.nick,
                     host: user.host || '',
                     username: user.username || '',
@@ -685,6 +705,36 @@ const state = new Vue({
             });
 
             this.$delete(network.users, user.nick.toLowerCase());
+        },
+
+        addMultipleUsersToBuffer: function addMultipleUsersToBuffer(buffer, newUsers) {
+            let network = this.getNetwork(buffer.networkid);
+            let bufUsers = _.clone(buffer.users);
+
+            state.usersTransaction(network.id, users => {
+                newUsers.forEach(newUser => {
+                    let user = newUser.user;
+                    let modes = newUser.modes;
+                    let userObj = state.getUser(network.id, user.nick);
+
+                    if (!userObj) {
+                        userObj = this.addUser(network, user, users);
+                    }
+                    bufUsers[userObj.nick.toLowerCase()] = userObj;
+
+                    // Add the buffer to the users buffer list
+                    if (!userObj.buffers[buffer.id]) {
+                        userObj.buffers[buffer.id] = {
+                            modes: modes || [],
+                            buffer: buffer,
+                        };
+                    } else {
+                        userObj.buffers[buffer.id].modes = modes || [];
+                    }
+                });
+            });
+
+            buffer.users = bufUsers;
         },
 
         addUserToBuffer: function addUserToBuffer(buffer, user, modes) {
@@ -753,6 +803,10 @@ const state = new Vue({
                 state.$delete(buffer.users, normalisedOld);
             }
         },
+
+        getStartups() {
+            return availableStartups;
+        },
     },
 });
 
@@ -764,6 +818,7 @@ function createEmptyNetworkObject() {
         id: 0,
         name: '',
         state: 'disconnected',
+        state_error: '',
         auto_commands: '',
         is_znc: false,
         channel_list: [],
@@ -809,6 +864,7 @@ function createEmptyBufferObject() {
         },
         last_read: Date.now(),
         active_timeout: null,
+        message_count: 0,
     };
 }
 
@@ -1035,11 +1091,13 @@ function initialiseBufferState(buffer) {
     /**
      * batch up floods of new messages for a huge performance gain
      */
-    function addSingleMessage(message) {
-        messageObj.messages.push(message);
+    function addSingleMessage(newMessage) {
+        messageObj.messages.push(newMessage);
+        buffer.message_count = messageObj.messages.length;
     }
-    function addMultipleMessages(messages) {
-        messageObj.messages = messageObj.messages.concat(messages);
+    function addMultipleMessages(newMessages) {
+        messageObj.messages = messageObj.messages.concat(newMessages);
+        buffer.message_count = messageObj.messages.length;
     }
     Object.defineProperty(buffer, 'addMessage', {
         value: batchedAdd(addSingleMessage, addMultipleMessages),
@@ -1050,5 +1108,5 @@ function initialiseBufferState(buffer) {
         buffer: buffer.name,
         messages: [],
     };
-    state.messages.push(messageObj);
+    messages.push(messageObj);
 }

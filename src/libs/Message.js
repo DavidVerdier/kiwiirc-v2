@@ -31,8 +31,8 @@ export default class Message {
             let parsed;
 
             let linkified = TextFormatting.linkifyUrls(word, {
-                addHandle: false,
-                handleClass: 'fa fa-chevron-right xkiwi-messagelist-message-linkhandle',
+                addHandle: true,
+                handleClass: 'fa fa-chevron-right kiwi-messagelist-message-linkhandle',
             });
             if (linkified.urls.length > 0) {
                 this.mentioned_urls = this.mentioned_urls.concat(linkified.urls);
@@ -49,7 +49,9 @@ export default class Message {
         });
 
         let parsed = words.join(' ');
-        parsed = TextFormatting.ircCodesToHtml(parsed, messageList.useExtraFormatting);
+        let useExtraFormatting = messageList.useExtraFormatting && this.type === 'privmsg';
+
+        parsed = TextFormatting.ircCodesToHtml(parsed, useExtraFormatting);
 
         this.html = parsed;
         return this.html;

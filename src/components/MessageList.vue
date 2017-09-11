@@ -1,5 +1,5 @@
 <template>
-    <div class="kiwi-messagelist" @scroll.self="onThreadScroll" @click.self="onListClick">
+    <div class="kiwi-messagelist" @scroll.self="onThreadScroll" @click.self="onListClick" :key="buffer.name">
         <div
             v-if="shouldShowChathistoryTools"
             class="kiwi-messagelist-scrollback"
@@ -55,7 +55,7 @@ export default {
             message_info_open: null,
         };
     },
-    props: ['buffer', 'messages', 'users'],
+    props: ['buffer', 'users'],
     computed: {
         thisMl: function thisMl() {
             return this;
@@ -67,11 +67,34 @@ export default {
             // Enables simple markdown formatting
             return this.buffer.setting('extra_formatting');
         },
-        filteredMessages: function filteredMessages() {
+        shouldShowChathistoryTools: function shouldShowChathistoryTools() {
+            // Only show it if we're connected
+            if (this.buffer.getNetwork().state !== 'connected') {
+                return false;
+            }
+
+            let isCorrectBufferType = (this.buffer.isChannel() || this.buffer.isQuery());
+            let isSupported = !!this.buffer.getNetwork().ircClient.network.supports('chathistory');
+            return isCorrectBufferType && isSupported && this.buffer.flags.chathistory_available;
+        },
+        ourNick: function ourNick() {
+            return this.buffer ?
+                this.buffer.getNetwork().nick :
+                '';
+        },
+        filteredMessages() {
             let network = this.buffer.getNetwork();
             let currentNick = network.nick;
+            let bufferMessages = this.buffer.getMessages();
 
-            let messages = this.messages.slice(0, this.messages.length);
+            // Hack; We need to make vue aware that we depend on buffer.message_count in order to
+            // get the messagelist to update its DOM, as the change of message_count alerts
+            // us that the messages have changed. This is done so that vue does not have to make
+            // every emssage reactive which gets very expensive.
+            /* eslint-disable no-unused-vars */
+            let ignoredVar = this.buffer.message_count;
+
+            let messages = bufferMessages.slice(0, bufferMessages.length);
             messages.sort((a, b) => {
                 if (a.time > b.time) {
                     return 1;
@@ -112,21 +135,6 @@ export default {
             }
 
             return list.reverse();
-        },
-        shouldShowChathistoryTools: function shouldShowChathistoryTools() {
-            // Only show it if we're connected
-            if (this.buffer.getNetwork().state !== 'connected') {
-                return false;
-            }
-
-            let isCorrectBufferType = (this.buffer.isChannel() || this.buffer.isQuery());
-            let isSupported = !!this.buffer.getNetwork().ircClient.network.supports('chathistory');
-            return isCorrectBufferType && isSupported && this.buffer.flags.chathistory_available;
-        },
-        ourNick: function ourNick() {
-            return this.buffer ?
-                this.buffer.getNetwork().nick :
-                '';
         },
     },
     methods: {
@@ -232,12 +240,15 @@ export default {
                 return;
             }
 
-            if (this.canShowInfoForMessage(message) && event.target.nodeName === 'A') {
-                // Stop links from doing their thing. We show a preview and normal links for that
-                event.preventDefault();
-            }
+            if (state.ui.is_touch) {
+                if (this.canShowInfoForMessage(message) && event.target.nodeName === 'A') {
+                    // We show message info boxes on touch screen devices so that the user has an
+                    // option to preview the links or do other stuff.
+                    event.preventDefault();
+                }
 
-            this.toggleMessageInfo(message);
+                this.toggleMessageInfo(message);
+            }
         },
         onThreadScroll: function onThreadScroll() {
             let el = this.$el;
@@ -277,7 +288,7 @@ export default {
 
             this.scrollToBottom();
         },
-        messages: function watchMessages() {
+        'buffer.message_count': function watchBufferMessageCount() {
             this.$nextTick(() => {
                 this.maybeScrollToBottom();
             });
