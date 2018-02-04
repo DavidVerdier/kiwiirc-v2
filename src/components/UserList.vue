@@ -28,17 +28,28 @@ import state from '@/libs/state';
 import * as TextFormatting from '@/helpers/TextFormatting';
 
 export default {
-    props: ['buffer', 'network', 'user'],
+    props: ['network'],
     data: function data() {
         return {
             search: null,
         };
     },
     computed: {
+        list: function list() {
+            return Object.values(this.network.users) || [];
+        },
         filteredList: function filteredList() {
-            let users = this.network.users;
+            let list = this.list;
 
-            return _.sortBy(users, 'nick');
+            if (this.search) {
+                list = this.list.filter(user => {
+                    if (user.nick.toLowerCase().indexOf(this.search) > -1) {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            return _.sortBy(list, 'nick');
         },
     },
     methods: {
