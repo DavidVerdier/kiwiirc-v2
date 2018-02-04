@@ -11,6 +11,9 @@
                 <tabbed-tab :header="$t('channels')" v-if="network.state==='connected'" name="channels">
                     <channel-list :network="network"></channel-list>
                 </tabbed-tab>
+                <tabbed-tab :header="$t('users')" v-if="network.state==='connected'" name="users">
+                    <user-list :network="network"></user-list>
+                </tabbed-tab>
             </tabbed-view>
         </div>
     </div>
@@ -22,6 +25,7 @@ import state from '@/libs/state';
 import MessageList from './MessageList';
 import NetworkSettings from './NetworkSettings';
 import ChannelList from './ChannelList';
+import UserList from './UserList';
 
 export default {
     data: function data() {
@@ -34,6 +38,7 @@ export default {
         MessageList,
         NetworkSettings,
         ChannelList,
+        UserList,
     },
     computed: {
         hasMessages: function hasMessages() {
