@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import i18next from 'i18next';
 import * as Colours from './Colours';
 import { md5 } from './Md5';
 import state from '@/libs/state';
@@ -158,7 +159,7 @@ export function linkifyUsers(word, userlist) {
     }
 
     let escaped = _.escape(nick);
-    let colour = createNickColour(nick);
+    let colour = exports.createNickColour(nick);
     ret = `<a class="kiwi-nick" data-nick="${escaped}" style="color:${colour}">${escaped}</a>`;
 
     if (prepend) {
@@ -255,4 +256,8 @@ export function formatText(formatId, params) {
     });
 
     return result;
+}
+
+export function t(...args) {
+    return i18next.t(...args);
 }

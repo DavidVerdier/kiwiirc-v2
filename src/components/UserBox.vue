@@ -1,13 +1,17 @@
 <template>
     <div class="kiwi-userbox">
         <div class="kiwi-userbox-header">
-            <i class="fa fa-user kiwi-userbox-icon" aria-hidden="true"></i>
-            <h3>{{user.nick}}</h3>
+            <i v-if="user.gender === 'M'" v-bind:style="{ color: createNickColour }" class="fa fa-male kiwi-userbox-icon" aria-hidden="true"></i>
+            <i v-else-if="user.gender === 'F'" v-bind:style="{ color: createNickColour }" class="fa fa-female kiwi-userbox-icon" aria-hidden="true"></i>
+            <i v-else v-bind:style="{ color: createNickColour }" class="fa fa-user kiwi-userbox-icon" aria-hidden="true"></i>
+            <h3 v-bind:style="{ color: createNickColour }">{{user.nick}}</h3>
             <div class="kiwi-userbox-usermask">{{user.username}}@{{user.host}}</div>
         </div>
 
         <p class="kiwi-userbox-basicinfo">
-            <b>{{$t('whois_realname')}}:</b> {{user.realname}} <br />
+            <span v-if="user.age"><b>{{$t('agl_age')}}: </b> {{user.age}} ans<br /></span>
+            <span v-if="user.gender"><b>{{$t('agl_gender')}}: </b> {{ genderName }}<br /></span>
+            <span v-if="user.location"><b>{{$t('agl_location')}}: </b> {{user.location}}<br /></span>
             <b>{{$t('whois_status')}}:</b> {{user.away ? user.away : $t('whois_status_available')}} <br />
         </p>
 
@@ -67,6 +71,8 @@
 <script>
 
 import state from '@/libs/state';
+import * as TextFormatting from '@/helpers/TextFormatting';
+// import Logger from '@/libs/Logger';
 
 export default {
     data: function data() {
@@ -158,6 +164,17 @@ export default {
                 client.raw(params);
             },
         },
+        createNickColour: function createNickColour() {
+            return TextFormatting.createNickColour(this.user.nick);
+        },
+        genderName: function genderName() {
+            if (this.user.gender === 'M') {
+                return 'Homme';
+            } else if (this.user.gender === 'F') {
+                return 'Femme';
+            }
+            return 'Inconnu';
+        },
     },
     methods: {
         userModeOnThisBuffer: function userModeOnBuffer(user) {
@@ -223,6 +240,14 @@ export default {
                 this.$el.style.top = (window.innerHeight - rect.height) + 'px';
             }
         },
+        genderIcon: function genderIcon() {
+            if (this.user.gender === 'M') {
+                return 'fa fa-male kiwi-userbox-icon';
+            } else if (this.user.gender === 'F') {
+                return 'fa fa-female kiwi-userbox-icon';
+            }
+            return 'fa fa-user kiwi-userbox-icon';
+        },
     },
     mounted: function mounted() {
         this.maybeRepositionTop();
@@ -242,10 +267,12 @@ export default {
 </script>
 
 <style>
+
 .kiwi-userbox {
     box-sizing: border-box;
     padding: 10px;
 }
+
 @media screen and (max-width: 500px) {
     .kiwi-userbox {
         left: 0;
@@ -256,36 +283,45 @@ export default {
         border-width: 1px 0;
     }
 }
+
 .kiwi-userbox-icon {
     font-size: 2.8em;
     margin-right: 0.3em;
     position: absolute;
 }
+
 .kiwi-userbox-header h3 {
     margin: 0 0 0 40px;
     padding: 0;
 }
+
 .kiwi-userbox-usermask {
     display: block;
     margin: 0 0 0 40px;
     font-size: 0.9em;
 }
+
 .kiwi-userbox-actions a {
     margin-right: 1em;
 }
+
 .kiwi-userbox-whois {
     padding: 5px;
     line-height: 1.4em;
 }
+
 .kiwi-userbox-whois-line {
     display: block;
 }
+
 .kiwi-userbox-actions-op {
     margin: 0.7em 0 0 0;
     padding: 0.7em 0;
 }
+
 .kiwi-userbox-actions-op form label {
     display: block;
     margin-bottom: 0.7em;
 }
+
 </style>

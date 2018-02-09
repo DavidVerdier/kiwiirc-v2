@@ -1,6 +1,9 @@
 <template>
     <div class="kiwi-nicklist">
-        <div class="kiwi-nicklist-info">{{$t('person', {count: sortedUsers.length})}}</div>
+        <div class="kiwi-nicklist-info">
+            <input :placeholder="$t('person', {count: sortedUsers.length})" v-model="user_filter" ref="user_filter">
+            <i class="fa fa-search" @click="$refs.user_filter.focus()"></i>
+        </div>
         <ul class="kiwi-nicklist-users">
             <li
                 v-for="user in sortedUsers"
@@ -16,6 +19,12 @@
                     @click="openUserbox(user, $event)"
                     v-bind:style="nickStyle(user.nick)"
                 >{{user.nick}}</span>
+
+                <div class="tooltip">
+                    <div class="tooltipNick">{{ user.nick }}</div>
+                    <div class="tooltipInfo">{{ user.age }} {{ (user.gender == 'F') ? 'Femme' : 'Homme' }}<br>{{ user.location }}</div>
+                </div>
+
             </li>
         </ul>
     </div>
@@ -45,6 +54,7 @@ export default {
     data: function data() {
         return {
             userbox_user: null,
+            user_filter: '',
         };
     },
     props: ['network', 'buffer', 'users'],
@@ -65,11 +75,14 @@ export default {
             let nickMap = Object.create(null);
             let users = [];
             let bufferUsers = this.buffer.users;
+            let nickFilter = this.user_filter.toLowerCase();
             /* eslint-disable guard-for-in */
             for (let lowercaseNick in bufferUsers) {
                 let user = bufferUsers[lowercaseNick];
                 nickMap[user.nick] = lowercaseNick;
-                users.push(user);
+                if (!nickFilter || lowercaseNick.indexOf(nickFilter) !== -1) {
+                    users.push(user);
+                }
             }
 
             let bufferId = this.buffer.id;
@@ -167,12 +180,32 @@ export default {
     box-sizing: border-box;
     overflow-y: auto;
 }
+
 .kiwi-nicklist-info {
     font-size: 0.9em;
-    padding-bottom: 1em;
+    padding-bottom: 0;
     text-align: center;
     border-width: 0 0 1px 0;
     border-style: solid;
+    display: flex;
+}
+
+.kiwi-nicklist-info input {
+    flex: 1;
+    border: 0;
+    background: 0 0;
+    padding: 10px 0 10px 20px;
+    margin: 0;
+    outline: 0;
+    text-align: center;
+}
+
+.kiwi-nicklist-info i.fa-search {
+    flex: 1;
+    margin-right: 25px;
+    color: #cfcfcf;
+    cursor: pointer;
+    line-height: 50px;
 }
 
 .kiwi-nicklist-users {
@@ -180,12 +213,43 @@ export default {
     padding: 0 20px;
     line-height: 1.2em;
 }
+
 .kiwi-nicklist-user {
     padding: 3px 0;
 }
+
 .kiwi-nicklist-user-nick {
     font-weight: bold;
     cursor: pointer;
 }
 
+.kiwi-nicklist-user div.tooltip div.tooltipNick {
+    background-color: #eeeeee;
+    border-bottom: 1px solid #ebebeb;
+    border-radius: 5px 5px 0 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    margin: 0;
+    padding: 8px 14px;
+    z-index: 1;
+}
+
+.kiwi-nicklist-user div.tooltip div.tooltipInfo {
+    padding: 9px 14px;
+}
+
+/* Tooltip arrow */
+.kiwi-nicklist-user .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.kiwi-nicklist-user:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
 </style>

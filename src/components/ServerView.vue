@@ -68,6 +68,7 @@ export default {
     overflow: hidden;
     position: relative;
 }
+
 .kiwi-serverview-inner {
     /* Mobile safari can't work out the height for scrolling to work without this wrapper element */
     position: absolute;
@@ -76,6 +77,7 @@ export default {
     left: 0;
     right: 0;
 }
+
 .kiwi-serverview-alerts {
     margin-bottom: 1em;
 }
